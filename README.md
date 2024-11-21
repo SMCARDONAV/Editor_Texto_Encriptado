@@ -1,23 +1,24 @@
 # Editor de texto encriptado
 
-Este proyecto es un editor de texto que permite la creación, edición, y visualización de archivos de texto plano encriptados. Los archivos se guardan encriptados para proteger su contenido, y se desencriptan automáticamente al abrirlos en el editor. El editor utiliza una interfaz gráfica simple y soporta operaciones básicas como crear, abrir, editar y guardar archivos.
+Este proyecto es un editor de texto que permite la creación, edición, y visualización de archivos de texto plano encriptados. Los archivos se guardan encriptados para proteger su contenido, y se desencriptan automáticamente al abrirlos en el editor. Utiliza Python como controlador principal y C++ para manejar la encriptación/desencriptación de forma eficiente. El editor incluye una interfaz gráfica construida con Tkinter.
 
 ---
 
 ## Características
 
 - **Encriptación y Desencriptación**:
-  - Los archivos se guardan encriptados utilizando la librería `cryptography` y el método **Fernet**.
-  - Los archivos son desencriptados automáticamente al abrirlos desde el editor.
+- Los archivos se guardan encriptados utilizando Crypto++ en C++.
+- La desencriptación ocurre automáticamente al abrir los archivos desde el editor.
+- La clave de encriptación se guarda en un archivo seguro (key.key).
 
 - **Interfaz gráfica**:
   - Construida con `Tkinter`, permitiendo una experiencia interactiva y amigable para el usuario.
 
 - **Funciones básicas del editor**:
-  - Crear archivos nuevos.
-  - Abrir archivos existentes (desencriptándolos automáticamente).
-  - Editar texto.
-  - Guardar archivos (encriptándolos).
+  1. Crear archivos nuevos.
+  2. Abrir archivos existentes (desencriptándolos automáticamente).
+  3. Editar el contenido del archivo.
+  4. Guardar cambios encriptando automáticamente el contenido.
 
 - **Gestión de claves de encriptación**:
   - Se genera una clave única en el archivo `key.key`.
@@ -25,21 +26,38 @@ Este proyecto es un editor de texto que permite la creación, edición, y visual
 
 ## Tecnologías utilizadas
 
-- **Python 3.8+**
-- **Tkinter**: Para la interfaz gráfica del editor.
-- **Cryptography**: Para la encriptación y desencriptación de los archivos.
+- Python 3.8+: Para la lógica principal y la interfaz gráfica.
+- Tkinter: Para construir la interfaz gráfica del editor.
+- pybind11: Para integrar funciones en C++ con Python.
+- Crypto++: Para realizar la encriptación y desencriptación.
+
 
 ## Requisitos previos
 
 1. **Python**: Python 3.8 o superior instalado en tu máquina.
-2. **Dependencias**: Instala la librería:
-   **pip install cryptography**
+2. **Dependencias**: Instala las librerías:
+   **pip install cryptography pybind11**
+3. Instalar herramientas y dependencias de C++:
+   **En Linux (Ubuntu/Debian):
+sudo apt-get update
+sudo apt-get install build-essential cmake libcrypto++-dev python3-dev**
+
+**En MacOS:
+  brew install cmake cryptopp pybind11**
+
+  ## Compilar el módulo de C++:
+  mkdir build
+  cd build
+  cmake ../cpp
+  make
 
 ## Ejecución del programa
 Ejecuta el archivo principal: **python text_editor.py**
 
 ## Uso del editor
-- Crear archivo nuevo: Ir a Archivo > Nuevo.
-- Abrir archivo: Ir a Archivo > Abrir y selecciona un archivo encriptado. El contenido se desencriptará automáticamente.
-- Guardar archivo: Ir a Archivo > Guardar como para guardar los cambios, encriptando el archivo en el proceso.
+Crear archivo nuevo: Ir a Archivo > Nuevo.
+Abrir archivo: Ir a Archivo > Abrir y seleccionar un archivo encriptado. El contenido será desencriptado automáticamente.
+Guardar archivo: Ir a Archivo > Guardar para guardar los cambios y encriptar el archivo.
+
+
 
