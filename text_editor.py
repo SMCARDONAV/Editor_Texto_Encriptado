@@ -1,13 +1,13 @@
 import os
 import secrets
 from tkinter import Tk, Text, Menu, filedialog, messagebox
-from encriptador import Encriptador  # Módulo C++ integrado con pybind11
+from encriptador import Encriptador  # Asume que el módulo en C++ ya está compilado y disponible
 
 KEY_FILE = "key.key"
 
 # Generar o cargar clave de encriptación
 def cargar_clave():
-    """Genera una clave única si no existe y la guarda en un archivo."""
+    """Genera una clave segura si no existe y la guarda en formato binario."""
     if not os.path.exists(KEY_FILE):
         clave = secrets.token_bytes(32)  # Generar clave segura de 256 bits
         with open(KEY_FILE, "wb") as f:
@@ -15,10 +15,16 @@ def cargar_clave():
     else:
         with open(KEY_FILE, "rb") as f:
             clave = f.read()
+    if len(clave) != 32:
+        raise ValueError("La clave debe tener exactamente 32 bytes.")
     return clave
 
 # Clave global
-CLAVE = cargar_clave()
+try:
+    CLAVE = cargar_clave()
+except Exception as e:
+    messagebox.showerror("Error Crítico", f"No se pudo cargar la clave de encriptación: {e}")
+    exit(1)
 
 class EditorTexto:
     def __init__(self, root):
@@ -78,7 +84,7 @@ class EditorTexto:
             encriptador = Encriptador()
             with open(file_path, "rb") as f:
                 datos_encriptados = f.read()
-            contenido = encriptador.desencriptar(datos_encriptados.decode(), CLAVE.decode())
+            contenido = encriptador.desencriptar(datos_encriptados, CLAVE.decode("latin1"))
             self.text_area.delete(1.0, "end")
             self.text_area.insert(1.0, contenido)
             self.file_path = file_path
@@ -96,9 +102,9 @@ class EditorTexto:
         try:
             encriptador = Encriptador()
             contenido = self.text_area.get(1.0, "end").strip()
-            datos_encriptados = encriptador.encriptar(contenido, CLAVE.decode())
+            datos_encriptados = encriptador.encriptar(contenido, CLAVE.decode("latin1"))
             with open(self.file_path, "wb") as f:
-                f.write(datos_encriptados.encode())
+                f.write(datos_encriptados.encode("latin1"))  # Asegura la escritura como binario
             messagebox.showinfo("Guardar", "Archivo guardado exitosamente.")
             self.root.title(f"Editor de Texto Encriptado - {os.path.basename(self.file_path)}")
         except Exception as e:
