@@ -1,95 +1,116 @@
 import os
-from cryptography.fernet import Fernet
-from tkinter import Tk, Text, Menu, filedialog, messagebox, END
+import secrets
+from tkinter import Tk, Text, Menu, filedialog, messagebox
+from encriptador import Encriptador  # Módulo C++ integrado con pybind11
 
-# Generar o cargar la clave de encriptación
 KEY_FILE = "key.key"
 
-def load_or_generate_key():
+# Generar o cargar clave de encriptación
+def cargar_clave():
+    """Genera una clave única si no existe y la guarda en un archivo."""
     if not os.path.exists(KEY_FILE):
-        key = Fernet.generate_key()
-        with open(KEY_FILE, "wb") as key_file:
-            key_file.write(key)
+        clave = secrets.token_bytes(32)  # Generar clave segura de 256 bits
+        with open(KEY_FILE, "wb") as f:
+            f.write(clave)
     else:
-        with open(KEY_FILE, "rb") as key_file:
-            key = key_file.read()
-    return Fernet(key)
+        with open(KEY_FILE, "rb") as f:
+            clave = f.read()
+    return clave
 
-# Inicializamos el cifrador Fernet
-fernet = load_or_generate_key()
+# Clave global
+CLAVE = cargar_clave()
 
-# Funciones del editor
-class TextEditor:
+class EditorTexto:
     def __init__(self, root):
         self.root = root
         self.root.title("Editor de Texto Encriptado")
         self.file_path = None
 
-        # Configuración de la interfaz
-        self.text_area = Text(self.root, wrap="word", font=("Arial", 12))
-        self.text_area.pack(expand=1, fill="both")
-        self._create_menu()
+        # Crear área de texto
+        self.text_area = Text(self.root, wrap="word", undo=True)
+        self.text_area.pack(expand=True, fill="both")
+        self.text_area.bind("<<Modified>>", self.on_modified)
 
-    def _create_menu(self):
+        # Crear barra de menú
         menu = Menu(self.root)
         self.root.config(menu=menu)
 
-        # Menú Archivo
-        file_menu = Menu(menu, tearoff=0)
-        file_menu.add_command(label="Nuevo", command=self.new_file)
-        file_menu.add_command(label="Abrir", command=self.open_file)
-        file_menu.add_command(label="Guardar", command=self.save_file)
-        file_menu.add_command(label="Guardar como...", command=self.save_file_as)
-        file_menu.add_separator()
-        file_menu.add_command(label="Salir", command=self.root.quit)
-        menu.add_cascade(label="Archivo", menu=file_menu)
+        archivo_menu = Menu(menu, tearoff=False)
+        menu.add_cascade(label="Archivo", menu=archivo_menu)
+        archivo_menu.add_command(label="Nuevo", command=self.nuevo_archivo)
+        archivo_menu.add_command(label="Abrir", command=self.abrir_archivo)
+        archivo_menu.add_command(label="Guardar", command=self.guardar_archivo)
+        archivo_menu.add_command(label="Salir", command=self.salir)
 
-    # Funciones del menú
-    def new_file(self):
-        self.text_area.delete(1.0, END)
-        self.file_path = None
-        self.root.title("Nuevo Archivo - Editor de Texto Encriptado")
-
-    def open_file(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Archivos encriptados", "*.enc"), ("Todos los archivos", "*.*")])
-        if file_path:
-            try:
-                with open(file_path, "rb") as file:
-                    encrypted_data = file.read()
-                    decrypted_data = fernet.decrypt(encrypted_data).decode("utf-8")
-                self.text_area.delete(1.0, END)
-                self.text_area.insert(1.0, decrypted_data)
-                self.file_path = file_path
-                self.root.title(f"{os.path.basename(file_path)} - Editor de Texto Encriptado")
-            except Exception as e:
-                messagebox.showerror("Error", f"No se pudo abrir el archivo: {e}")
-
-    def save_file(self):
+    def on_modified(self, event=None):
+        """Actualizar título si hay cambios."""
         if self.file_path:
-            self._save_to_file(self.file_path)
+            self.root.title(f"Editor de Texto Encriptado - {os.path.basename(self.file_path)}*")
         else:
-            self.save_file_as()
+            self.root.title("Editor de Texto Encriptado - Nuevo archivo*")
+        self.text_area.edit_modified(False)
 
-    def save_file_as(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".enc", filetypes=[("Archivos encriptados", "*.enc"), ("Todos los archivos", "*.*")])
-        if file_path:
-            self._save_to_file(file_path)
+    def verificar_cambios(self):
+        """Verifica si hay cambios no guardados antes de continuar."""
+        if self.text_area.edit_modified():
+            respuesta = messagebox.askyesnocancel("Guardar cambios", "¿Deseas guardar los cambios antes de continuar?")
+            if respuesta:  # Guardar
+                self.guardar_archivo()
+            elif respuesta is None:  # Cancelar
+                return False
+        return True
 
-    def _save_to_file(self, file_path):
+    def nuevo_archivo(self):
+        """Limpia el área de texto y resetea la ruta."""
+        if self.verificar_cambios():
+            self.text_area.delete(1.0, "end")
+            self.file_path = None
+            self.root.title("Editor de Texto Encriptado - Nuevo archivo")
+
+    def abrir_archivo(self):
+        """Abre y desencripta un archivo existente."""
+        if not self.verificar_cambios():
+            return
+        file_path = filedialog.askopenfilename(filetypes=[("Archivos encriptados", "*.enc")])
+        if not file_path:
+            return
         try:
-            plain_text = self.text_area.get(1.0, END).strip()
-            encrypted_data = fernet.encrypt(plain_text.encode("utf-8"))
-            with open(file_path, "wb") as file:
-                file.write(encrypted_data)
+            encriptador = Encriptador()
+            with open(file_path, "rb") as f:
+                datos_encriptados = f.read()
+            contenido = encriptador.desencriptar(datos_encriptados.decode(), CLAVE.decode())
+            self.text_area.delete(1.0, "end")
+            self.text_area.insert(1.0, contenido)
             self.file_path = file_path
-            self.root.title(f"{os.path.basename(file_path)} - Editor de Texto Encriptado")
-            messagebox.showinfo("Guardado", "Archivo guardado exitosamente.")
+            self.root.title(f"Editor de Texto Encriptado - {os.path.basename(file_path)}")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo abrir el archivo: {e}")
+
+    def guardar_archivo(self):
+        """Guarda y encripta el contenido actual."""
+        if not self.file_path:
+            self.file_path = filedialog.asksaveasfilename(defaultextension=".enc",
+                                                          filetypes=[("Archivos encriptados", "*.enc")])
+        if not self.file_path:
+            return
+        try:
+            encriptador = Encriptador()
+            contenido = self.text_area.get(1.0, "end").strip()
+            datos_encriptados = encriptador.encriptar(contenido, CLAVE.decode())
+            with open(self.file_path, "wb") as f:
+                f.write(datos_encriptados.encode())
+            messagebox.showinfo("Guardar", "Archivo guardado exitosamente.")
+            self.root.title(f"Editor de Texto Encriptado - {os.path.basename(self.file_path)}")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo guardar el archivo: {e}")
 
-# Iniciar la aplicación
+    def salir(self):
+        """Cierra la aplicación."""
+        if self.verificar_cambios():
+            self.root.quit()
+
+# Inicializar la aplicación
 if __name__ == "__main__":
     root = Tk()
-    app = TextEditor(root)
-    root.geometry("800x600")
+    app = EditorTexto(root)
     root.mainloop()
