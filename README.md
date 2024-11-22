@@ -1,3 +1,8 @@
+## Video de Sustentación
+**[Video en DRIVE](https://drive.google.com/file/d/1CTIwFtoR6vd6ellOqxm2x5oW6lLBoJ9H/view?usp=sharing)**
+
+---
+
 # Editor de texto encriptado
 
 Este proyecto es un editor de texto que permite la creación, edición, y visualización de archivos de texto plano encriptados. Los archivos se guardan encriptados para proteger su contenido, y se desencriptan automáticamente al abrirlos en el editor. Utiliza Python como controlador principal y C++ para manejar la encriptación/desencriptación de forma eficiente. El editor incluye una interfaz gráfica construida con Tkinter.
@@ -79,5 +84,7 @@ python text_editor.py
 | Abrir    | Ctrl + O         |
 | Guardar  | Ctrl + S         |
 | Salir    | Esc              |
+
+
 
 
