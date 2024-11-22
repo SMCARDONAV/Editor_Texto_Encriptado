@@ -29,7 +29,7 @@ std::vector<unsigned char> Encriptador::encriptar(const std::string& texto, cons
 
     int len;
     if (EVP_EncryptUpdate(ctx, ciphertext.data() + sizeof(iv), &len,
-                          reinterpret_cast<const unsigned char*>(texto.data()), texto.size()) != 1) {
+                        reinterpret_cast<const unsigned char*>(texto.data()), texto.size()) != 1) {
         EVP_CIPHER_CTX_free(ctx);
         throw std::runtime_error("Error encriptando datos");
     }
@@ -63,7 +63,7 @@ std::string Encriptador::desencriptar(const std::vector<unsigned char>& texto_en
     std::vector<unsigned char> plaintext(texto_encriptado.size() - EVP_MAX_IV_LENGTH);
     int len;
     if (EVP_DecryptUpdate(ctx, plaintext.data(), &len, texto_encriptado.data() + EVP_MAX_IV_LENGTH,
-                          texto_encriptado.size() - EVP_MAX_IV_LENGTH) != 1) {
+                        texto_encriptado.size() - EVP_MAX_IV_LENGTH) != 1) {
         EVP_CIPHER_CTX_free(ctx);
         throw std::runtime_error("Error desencriptando datos");
     }
