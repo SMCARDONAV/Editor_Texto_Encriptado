@@ -1,5 +1,17 @@
-## Video de Sustentación
+### Video de Sustentación
 **[Video en DRIVE](https://drive.google.com/file/d/1CTIwFtoR6vd6ellOqxm2x5oW6lLBoJ9H/view?usp=sharing)**
+
+### Integrantes del Grupo
+
+- Samuel Oviedo Paz
+
+- Isis Catitza Amaya Arbelaez
+
+- Santiago Rozo
+
+- Sara Maria Cardona Villada
+
+- Maria Camila Morales Rios
 
 ---
 
