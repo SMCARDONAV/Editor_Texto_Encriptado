@@ -7,7 +7,7 @@ Este proyecto es un editor de texto que permite la creación, edición, y visual
 ## Características
 
 - **Encriptación y Desencriptación**:
-- Los archivos se guardan encriptados utilizando Crypto++ en C++.
+- Los archivos se guardan encriptados utilizando el algoritmo de AES en C++.
 - La desencriptación ocurre automáticamente al abrir los archivos desde el editor.
 - La clave de encriptación se guarda en un archivo seguro (key.key).
 
@@ -26,38 +26,58 @@ Este proyecto es un editor de texto que permite la creación, edición, y visual
 
 ## Tecnologías utilizadas
 
-- Python 3.8+: Para la lógica principal y la interfaz gráfica.
-- Tkinter: Para construir la interfaz gráfica del editor.
-- pybind11: Para integrar funciones en C++ con Python.
-- Crypto++: Para realizar la encriptación y desencriptación.
+- **Python 3.8+:** Para la lógica principal y la interfaz gráfica.
+- **Tkinter:** Para construir la interfaz gráfica del editor.
+- **Pybind11:** Para integrar funciones en C++ con Python.
+- **OpenSSL:** Se utiliza esta biblioteca para realizar la encriptación y desencriptación.
 
 
 ## Requisitos previos
 
 1. **Python**: Python 3.8 o superior instalado en tu máquina.
 2. **Dependencias**: Instala las librerías:
-   **pip install cryptography pybind11**
-3. Instalar herramientas y dependencias de C++:
-   **En Linux (Ubuntu/Debian):
-sudo apt-get update
-sudo apt-get install build-essential cmake libcrypto++-dev python3-dev**
+  ```bash
+  pip install cryptography pybind11
+  ```
+3. Instalar herramientas y dependencias de C++:   
 
-**En MacOS:
-  brew install cmake cryptopp pybind11**
+**En Linux (Ubuntu/Debian):**
+  ```bash
+  sudo apt-get update   
+  sudo apt-get install build-essential cmake libcrypto++-dev python3-dev
+  ```
+
+
+**En MacOS:**
+  ```bash
+  brew install cmake cryptopp pybind11
+  ```
 
   ## Compilar el módulo de C++:
+  ```bash
   mkdir build
   cd build
   cmake ../cpp
   make
+  ```
 
 ## Ejecución del programa
-Ejecuta el archivo principal: **python text_editor.py**
-
+Ejecuta el archivo principal:   
+```python
+python text_editor.py
+```
 ## Uso del editor
-Crear archivo nuevo: Ir a Archivo > Nuevo.
-Abrir archivo: Ir a Archivo > Abrir y seleccionar un archivo encriptado. El contenido será desencriptado automáticamente.
-Guardar archivo: Ir a Archivo > Guardar para guardar los cambios y encriptar el archivo.
+**Crear archivo nuevo:** Ir a Archivo > Nuevo.   
+**Abrir archivo:** Ir a Archivo > Abrir y seleccionar un archivo encriptado. El contenido será desencriptado automáticamente.   
+**Guardar archivo:** Ir a Archivo > Guardar para guardar los cambios y encriptar el archivo.
 
+#### Atajos de teclado
+
+| Acción   | Atajo de Teclado |
+|----------|------------------|
+| Crear    | Ctrl + N         |
+| Abrir    | Ctrl + O         |
+| Guardar  | Ctrl + S         |
+| Salir    | Esc              |
 
 
