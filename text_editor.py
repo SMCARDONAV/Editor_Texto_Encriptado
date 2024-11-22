@@ -44,10 +44,16 @@ class EditorTexto:
 
         archivo_menu = Menu(menu, tearoff=False)
         menu.add_cascade(label="Archivo", menu=archivo_menu)
-        archivo_menu.add_command(label="Nuevo", command=self.nuevo_archivo)
-        archivo_menu.add_command(label="Abrir", command=self.abrir_archivo)
-        archivo_menu.add_command(label="Guardar", command=self.guardar_archivo)
-        archivo_menu.add_command(label="Salir", command=self.salir)
+        archivo_menu.add_command(label="Nuevo", command=self.nuevo_archivo, accelerator="Ctrl+N")
+        archivo_menu.add_command(label="Abrir", command=self.abrir_archivo, accelerator="Ctrl+O")
+        archivo_menu.add_command(label="Guardar", command=self.guardar_archivo, accelerator="Ctrl+s")
+        archivo_menu.add_command(label="Salir", command=self.salir, accelerator="Esc")
+        
+        # Vincular atajos de teclado
+        self.root.bind("<Control-n>", lambda event: self.nuevo_archivo())
+        self.root.bind("<Control-o>", lambda event: self.abrir_archivo())
+        self.root.bind("<Control-s>", lambda event: self.guardar_archivo())
+        self.root.bind("<Escape>", lambda event: self.salir())
 
     def on_modified(self, event=None):
         """Actualizar título si hay cambios."""
