@@ -7,7 +7,7 @@
 
 - Isis Catitza Amaya Arbelaez
 
-- Santiago Rozo
+- Santiago Alberto Rozo Silva
 
 - Sara Maria Cardona Villada
 
